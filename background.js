@@ -1,21 +1,35 @@
-// Set the toolbar badge text
-browser.runtime.onMessage.addListener((request, sender) => {
-    //Cache stores page load time for each indvidual tab, so they don't interfere
-    browser.storage.local.get('cache').then(data => {
-      if (!data.cache) data.cache = {};
-      data.cache['tab' + sender.tab.id] = request.timing;
-      browser.storage.local.set(data).then(() => {
-        browser.browserAction.setBadgeText({text: request.time, tabId: sender.tab.id});
-        browser.browserAction.setPopup({tabId: sender.tab.id, popup: "popup.html"})
-      });
+// Store the load time for each tab
+const loadTimes = {};
+
+// Listen for requests to start measuring load time
+chrome.webRequest.onSendHeaders.addListener(
+  function (details) {
+    loadTimes[details.tabId] = Date.now();
+  },
+  { urls: ["<all_urls>"] },
+  ["requestHeaders"]
+);
+
+// Listen for requests to finish and calculate load time
+chrome.webRequest.onCompleted.addListener(
+  function (details) {
+    const startTime = loadTimes[details.tabId];
+    if (startTime) {
+      const loadTime = Date.now() - startTime;
+      loadTimes[details.tabId] = loadTime;
+    }
+  },
+  { urls: ["<all_urls>"] },
+  ["responseHeaders"]
+);
+
+// Handle requests from the popup to retrieve the load time
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.action === "getLoadTime") {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const loadTime = loadTimes[tabs[0].id];
+      sendResponse({ loadTime: loadTime || "N/A" });
     });
-  
-  });
-  
-  // cache eviction
-  browser.tabs.onRemoved.addListener(tabId => {
-    browser.storage.local.get('cache').then(data => {
-      if (data.cache) delete data.cache['tab' + tabId];
-      browser.storage.local.set(data);
-    });
-  });
+    return true;
+  }
+});
