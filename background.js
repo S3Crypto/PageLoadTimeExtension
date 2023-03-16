@@ -1,34 +1,24 @@
-// Store the load time for each tab
-const loadTimes = {};
+// Store the start time for each tab
+const startTimes = {};
 
-// Listen for requests to start measuring load time
-chrome.webRequest.onSendHeaders.addListener(
-  function (details) {
-    loadTimes[details.tabId] = Date.now();
-  },
-  { urls: ["<all_urls>"] },
-  ["requestHeaders"]
-);
-
-// Listen for requests to finish and calculate load time
-chrome.webRequest.onCompleted.addListener(
-  function (details) {
-    const startTime = loadTimes[details.tabId];
-    if (startTime) {
-      const loadTime = Date.now() - startTime;
-      loadTimes[details.tabId] = loadTime;
-    }
-  },
-  { urls: ["<all_urls>"] },
-  ["responseHeaders"]
-);
+// Listen for the tab to be updated and store the start time
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  if (changeInfo.status === "loading" && tab.active) {
+    startTimes[tabId] = Date.now();
+  }
+});
 
 // Handle requests from the popup to retrieve the load time
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "getLoadTime") {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const loadTime = loadTimes[tabs[0].id];
-      sendResponse({ loadTime: loadTime || "N/A" });
+      const startTime = startTimes[tabs[0].id];
+      if (startTime) {
+        const loadTime = Date.now() - startTime;
+        sendResponse({ loadTime: loadTime });
+      } else {
+        sendResponse({ loadTime: "N/A" });
+      }
     });
     return true;
   }
