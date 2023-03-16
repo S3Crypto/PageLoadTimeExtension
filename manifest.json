@@ -1,27 +1,20 @@
 {
-    "manifest_version": 2,
-    "name": "Page load Time Tracker",
-    "version": "0.3",
-    "description": "A Chrome extension to measure page load time",
-    "background": {
-      "scripts": ["background.js"],
-      "persistent": true
-    },
-    "browser_action": {
-      "default_icon": "icon.png",
-      "default_title": "Page Load Time Tracker"
-    },
-    "content_scripts": [{
-      "matches": ["<all_urls>"],
-      "js": ["popup.js"]
-    }],
-    "permissions": [
-      "activeTab",
-      "storage",
-      "tabs",
-      "webRequest",
-      "webRequestBlocking",
-      "<all_urls>"
-    ]
+  "manifest_version": 2,
+  "name": "Page Load Time Extension",
+  "version": "1.0",
+  "description": "A Chrome extension to measure page load time.",
+  "permissions": [
+    "tabs",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  }
 }
+
   
