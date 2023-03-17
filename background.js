@@ -1,19 +1,6 @@
 // Store the start time for each tab
 const loadTimes = {};
 
-// Listen for the tab to be updated and store the start time
-/*chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (changeInfo.status === "loading" && tab.active) {
-    startTimes[tabId] = Date.now();
-  } else if (changeInfo.status === 'complete' && tab.active) {
-    const tabLoadTime = startTimes[tabId];
-    if (tabLoadTime && tabLoadTime.startTime) {
-      tabLoadTime.endTime = Date.now();
-      tabLoadTime.loadTime = tabLoadTime.endTime - tabLoadTime.startTime;
-    }
-  }
-});*/
-
 // Inject the content script when a tab is updated
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete') {
@@ -24,7 +11,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 // Listen for the load time from the content script
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === 'setLoadTime') {
-    loadTimes[sender.tab.id] = request.loadTime;
+    const roundedLoadTime = Math.round(request.loadTime);
+    loadTimes[sender.tab.id] = roundedLoadTime;
+
+    // Set the badge text and background color
+    chrome.browserAction.setBadgeText({ text: roundedLoadTime.toString(), tabId: sender.tab.id });
+    chrome.browserAction.setBadgeBackgroundColor({ color: '#4CAF50', tabId: sender.tab.id });
   }
 });
 
