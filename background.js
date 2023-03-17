@@ -5,6 +5,12 @@ const startTimes = {};
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.status === "loading" && tab.active) {
     startTimes[tabId] = Date.now();
+  } else if (changeInfo.status === 'complete' && tab.active) {
+    const tabLoadTime = startTimes[tabId];
+    if (tabLoadTime && tabLoadTime.startTime) {
+      tabLoadTime.endTime = Date.now();
+      tabLoadTime.loadTime = tabLoadTime.endTime - tabLoadTime.startTime;
+    }
   }
 });
 
