@@ -32,10 +32,10 @@ function displayBrokenLinks(brokenLinks) {
   const list = document.createElement('ul');
   list.classList.add('broken-links-list');
   resultsContainer.appendChild(list);
+  const loadingSpinner = document.getElementById('loading');
+  loadingSpinner.style.display = 'none';
 
   if (brokenLinks.length > 0) {
-    const loadingSpinner = document.getElementById('loading');
-    loadingSpinner.style.display = 'none';
     brokenLinks.forEach((link) => {
       const listItem = document.createElement('li');
       listItem.classList.add('broken-link-item');
