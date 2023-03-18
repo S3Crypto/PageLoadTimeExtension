@@ -6,7 +6,8 @@
   "permissions": [
     "tabs",
     "<all_urls>",
-    "webNavigation"
+    "webNavigation",
+    "activeTab"
   ],
   "background": {
     "scripts": ["background.js"],
