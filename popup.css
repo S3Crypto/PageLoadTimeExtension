@@ -2,5 +2,31 @@ body {
     font-family: Roboto,sans-serif;
     font-size: 13px;
     -webkit-font-smoothing: antialiased;
-    width: 200px;
+    width: 400px;
 }
+  
+.broken-links-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+  
+.broken-link-item {
+  margin-bottom: 10px;
+}
+  
+.broken-link-text {
+  color: #007bff;
+  text-decoration: none;
+}
+  
+.broken-link-text:hover {
+  text-decoration: underline;
+}
+
+.broken-link-status {
+  color: #ff4d4d;
+  font-weight: bold;
+  margin-left: 5px;
+}
+  
