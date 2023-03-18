@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const checkLinksButton = document.getElementById('check-links');
 
   checkLinksButton.addEventListener('click', () => {
+    const loadingSpinner = document.getElementById('loading');
+    loadingSpinner.style.display = 'inline-block';
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       chrome.tabs.sendMessage(tabs[0].id, { message: 'check_broken_links' });
     });
@@ -32,6 +34,8 @@ function displayBrokenLinks(brokenLinks) {
   resultsContainer.appendChild(list);
 
   if (brokenLinks.length > 0) {
+    const loadingSpinner = document.getElementById('loading');
+    loadingSpinner.style.display = 'none';
     brokenLinks.forEach((link) => {
       const listItem = document.createElement('li');
       listItem.classList.add('broken-link-item');
